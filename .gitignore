@@ -48,6 +48,7 @@ target/
 bin/
 build/
 .settings/
+screenshots/
 
 *.launch
 .apt_generated/
