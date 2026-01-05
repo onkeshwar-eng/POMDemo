@@ -15,6 +15,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import utils.EmailUtils;
 import utils.ExtentReportManager;
 import utils.Log;
 
@@ -23,15 +24,17 @@ public class BaseTest {
 	protected WebDriver driver;
 	protected static ExtentReports extent;
 	protected ExtentTest test;
-    
+
 	@BeforeSuite
 	public void setupReport() {
 		extent = ExtentReportManager.getReportInstance();
 	}
-	
+
 	@AfterSuite
 	public void teardownReport() {
 		extent.flush();
+		String reportPath = ExtentReportManager.reportPath;
+		EmailUtils.sendTestReport(reportPath);
 	}
 
 	@BeforeMethod
@@ -47,11 +50,12 @@ public class BaseTest {
 
 	@AfterMethod
 	public void tearDown(ITestResult result) {
-		
-		if(result.getStatus() == ITestResult.FAILURE) {
+
+		if (result.getStatus() == ITestResult.FAILURE) {
 			String screenshotPath = ExtentReportManager.captureScreenshot(driver, "Login Failure");
-			System.out.println("ScreenShot Captures, PATH:"+screenshotPath);
-			test.fail("Test failed. screenshot attached.", MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+			System.out.println("ScreenShot Captures, PATH:" + screenshotPath);
+			test.fail("Test failed. screenshot attached.",
+					MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
 		}
 		if (driver != null) {
 			Log.info("Closing Browser...");
